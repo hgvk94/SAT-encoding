@@ -106,7 +106,22 @@ void preimage(int rounds)
     }
 
     /* Printing out the instance */
-    f->cnf.dimacs();
+    f->cnf.dimacs("r"+to_string(rounds)+".cnf");
+    string mdl_fname = "r"+to_string(rounds)+".mdl";
+    FILE *out = fopen(mdl_fname.c_str(), "w");
+    fprintf(out, "s SATISFIABLE\nv ");
+    /* Print solution as well */
+    for(int i=0; i < f->inputSize*32; i++)
+    {
+        int r = i / 32;
+        int c = i % 32;
+        int var = (f->w[r][c]);
+        bool val = (w[r] >> c) & 1;
+        if (val) fprintf(out, "%d ", var);
+        else fprintf(out, "-%d ", var);
+    }
+    fprintf(out, "0\n");
+    fclose(out);
 
     delete f;
 }
